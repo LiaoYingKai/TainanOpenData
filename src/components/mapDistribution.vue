@@ -3,6 +3,9 @@
   <div class="title">
     <p>地圖分析</p>
   </div>
+  <div class="selectCondition">
+
+  </div>
   <div id="map">
   </div>
 </div>
@@ -12,8 +15,13 @@
 import axios from 'axios'
 export default {
   name: 'mapDistribution',
+  data() {
+    return {}
+  },
   methods: {
     initMap: function() {
+      var markers = []
+      var heatmapList = []
       let map = new google.maps.Map(document.getElementById('map'), {
         zoom: 11,
         center: {
@@ -22,12 +30,13 @@ export default {
         },
         // scrollwheel: false,
         // draggable: false,
-        // disableDefaultUI: 'disabled',
-        // disableDoubleClickZoom: 'disabled',
-        // minZoom: 11
+        disableDefaultUI: 'disabled',
+        disableDoubleClickZoom: 'disabled',
+        minZoom: 11
       });
+
+
       var infowindow = new google.maps.InfoWindow();
-      var markers = [];
       axios.get('static/tainan.json')
         .then(e => {
           var features = e.data.features
@@ -54,37 +63,40 @@ export default {
               strokeOpacity: .7,
               strokeWeight: 0.5,
               strokePosition: google.maps.StrokePosition.CENTER,
-              fillColor: '#f00',
-              fillOpacity: 0.35,
+              // fillColor: '#f00',
+              // fillOpacity: 0.35,
               map: map
             });
             // 為每個多邊形加上滑鼠點擊事件
             polygonPath[index].addListener('click', function(e) {
-              console.log('fuck')
               var districtName = name[index]
-              console.log(districtName)
-              // // var markers = []
-              // axios.get(`http://104.199.170.116/api/detail/2018/7/${districtName}`)
-              //   .then(function(data) {
-              //     console.log(data)
-              //     // console.log(monthSelect.get(0).selectedIndex)
-              //     // console.log(data)
-              //     markers.forEach(item => {
-              //       item.setMap(null)
-              //     })
-              //     data.items.forEach(item => {
-              //       marker = new google.maps.Marker({
-              //         position: {
-              //           lat: Number(item.gps_latitude),
-              //           lng: Number(item.gps_longitude),
-              //         },
-              //         map: map
-              //       })
-              //       markers.push(marker)
-              //     })
-              //   }).catch(error => {
-              //     console.log(error)
-              //   })
+              axios.get(`http://104.199.170.116/api/detail/2018/7/${districtName}`)
+                .then(response => {
+                  console.log(response)
+                  markers.forEach(item => {
+                    item.setMap(null)
+                  })
+                  // heatmapList = []
+                  response.data.items.forEach(item => {
+                    // heatmapList.push(new google.maps.LatLng(Number(item.gps_latitude), Number(item.gps_longitude)))
+                    // var heatmap = new google.maps.visualization.HeatmapLayer({
+                    //   map: map,
+                    //   data: heatmapList
+                    // })
+                    var marker = new google.maps.Marker({
+                      position: {
+                        lat: Number(item.gps_latitude),
+                        lng: Number(item.gps_longitude),
+                      },
+                      map: map,
+                      icon: 'static/circle.png'
+
+                    })
+                    markers.push(marker)
+                  })
+                }).catch(error => {
+                  console.log(error)
+                })
             })
             // 設定滑鼠移到多邊形上，多邊形會變成半透明黑色
             polygonPath[index].addListener('mouseover', function(e) {
@@ -101,19 +113,16 @@ export default {
               // 將資訊視窗打開在地圖上
               infowindow.open(map);
               this.setOptions({
-                fillColor: '#000'
+                // fillColor: '#000'
               })
             });
             // 設定滑鼠移出多邊形，多邊形會恢復半透明紅色
             polygonPath[index].addListener('mouseout', function(e) {
               this.setOptions({
-                fillColor: '#f00'
+                // fillColor: '#f00'
               })
             });
           });
-          name.forEach(item => {
-            districtSelect.append($("<option></option>").text(item))
-          })
         })
         .catch(error => {
           console.log(error)
@@ -135,5 +144,9 @@ export default {
     width: 95%;
     height: 85%;
     margin: 15px 30px;
+}
+.selectCondition {
+    height: 50px;
+
 }
 </style>

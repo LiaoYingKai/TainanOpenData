@@ -46,7 +46,7 @@ export default {
         "中西區", "北區", "安南區", "安平區"
       ],
       area: "臺南",
-      years: [2018, 2017, 2016, 2015, 2014, 2013, 2012],
+      years: [2018, 2017, 2016, 2015, 2014, 2013],
       year: 2018,
       months: ["整年", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       month: '整年',
@@ -87,26 +87,18 @@ export default {
             }
           }
           this.chartData.rows = response.data.items
-          // if (this.comparison !== "無" && this.area !== '臺南') {
-          //   axios.get(apiRainfail)
-          //     .then(response => {
-          //       console.log(response.data.items)
-          //     })
-          //     .catch(error => {
-          //       console.log(error)
-          //     })
-          // } else {
-          //   if (this.area === "臺南") {
-          //     this.chartData.columns = ['district', 'total']
-          //   } else {
-          //     if (this.month === "整年") {
-          //       this.chartData.columns = ['month', 'total']
-          //     } else {
-          //       this.chartData.columns = ['day', 'total']
-          //     }
-          //   }
-          //   this.chartData.rows = response.data.items
-          // }
+          if (this.comparison !== "無" && this.area !== '臺南') {
+            axios.get(apiRainfail)
+              .then(response => {
+                this.chartData.columns.push('rain_rate')
+                this.chartData.rows.forEach((item, index) => {
+                  item.rain_rate = response.data.items[index].rain_rate
+                })
+              })
+              .catch(error => {
+                console.log(error)
+              })
+          }
         }).catch(error => {
           console.log(error)
         })

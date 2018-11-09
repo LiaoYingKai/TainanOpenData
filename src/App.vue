@@ -24,7 +24,7 @@ body {
   display: flex;
   font-family: sans-serif;
   width: 100vw;
-
+  /* overflow-y: hidden; */
 }
 
 .sliderWidth {
