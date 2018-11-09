@@ -17,8 +17,6 @@ import {
 import {
   Radio,
   Slider,
-  Table,
-  TableColumn,
 } from 'element-ui'
 import VCharts from 'v-charts'
 
@@ -29,8 +27,6 @@ library.add(faListUl)
 
 Vue.use(Radio)
 Vue.use(Slider)
-Vue.use(Table);
-Vue.use(TableColumn);
 
 Vue.use(VCharts)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
