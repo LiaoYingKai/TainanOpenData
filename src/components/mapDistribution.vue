@@ -4,7 +4,19 @@
     <p>地圖分析</p>
   </div>
   <div class="selectCondition">
-
+    <div class="month">
+      <span>月份：</span>
+      <el-radio v-for="item in months" v-model="month" :label="`${item}`" class="radioStyle" :key="`${item}`">{{item}}</el-radio>
+    </div>
+    <span>時間區隔：</span>
+    <select v-model="start">
+      <option v-for="item in hours" >{{item}}</option>
+    </select>
+    <span>點 到</span>
+    <select v-model="end" @change="isTimeRange">
+      <option v-for="item in hours" >{{item}}</option>
+    </select>
+    <span>點</span>
   </div>
   <div id="map">
   </div>
@@ -16,14 +28,20 @@ import axios from 'axios'
 export default {
   name: 'mapDistribution',
   data() {
-    return {}
+    return {
+      months: [1, 2, 3, 4, 5, 6, 7, 8],
+      month: 1,
+      hours: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+      start: 0,
+      end: 24
+    }
   },
   methods: {
     initMap: function() {
       var markers = []
       var heatmapList = []
       let map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 11,
+        zoom: 10,
         center: {
           lat: 23.1510064,
           lng: 120.3361285
@@ -34,7 +52,7 @@ export default {
         disableDoubleClickZoom: 'disabled',
         minZoom: 11
       });
-
+      var vm = this
 
       var infowindow = new google.maps.InfoWindow();
       axios.get('static/tainan.json')
@@ -70,19 +88,16 @@ export default {
             // 為每個多邊形加上滑鼠點擊事件
             polygonPath[index].addListener('click', function(e) {
               var districtName = name[index]
-              axios.get(`http://104.199.170.116/api/detail/2018/7/${districtName}`)
+              let latLngBoundsList = []
+
+              axios.get(`http://35.189.170.189/api/detail/2018/${vm.month}/${districtName}?start_at=${vm.start}:00:00&end_at=${vm.end}:00:00`)
                 .then(response => {
                   console.log(response)
                   markers.forEach(item => {
                     item.setMap(null)
                   })
-                  // heatmapList = []
                   response.data.items.forEach(item => {
-                    // heatmapList.push(new google.maps.LatLng(Number(item.gps_latitude), Number(item.gps_longitude)))
-                    // var heatmap = new google.maps.visualization.HeatmapLayer({
-                    //   map: map,
-                    //   data: heatmapList
-                    // })
+                    latLngBoundsList.push(new google.maps.LatLng(Number(item.gps_latitude), Number(item.gps_longitude)))
                     var marker = new google.maps.Marker({
                       position: {
                         lat: Number(item.gps_latitude),
@@ -93,7 +108,16 @@ export default {
 
                     })
                     markers.push(marker)
+
                   })
+                  var bounds = new google.maps.LatLngBounds(
+                    ...latLngBoundsList
+                  );
+                  // console.log(latLngBoundsList)
+                  var center = bounds.getCenter();
+                  console.log(center)
+                  var x = bounds.contains(center);
+                  console.log(x)
                 }).catch(error => {
                   console.log(error)
                 })
@@ -127,6 +151,11 @@ export default {
         .catch(error => {
           console.log(error)
         })
+    },
+    isTimeRange: function() {
+      if (Number(this.start) >= Number(this.end)) {
+        alert("結束時間請大於開始時間")
+      }
     }
   },
   mounted() {
@@ -142,11 +171,23 @@ export default {
 }
 #map {
     width: 95%;
-    height: 85%;
+    height: 80%;
     margin: 15px 30px;
 }
 .selectCondition {
-    height: 50px;
-
+    margin: 15px 0 0 30px;
+}
+.radioStyle {
+    margin-left: 10px;
+}
+.endTime,
+.month,
+.startTime {
+    margin-top: 15px;
+}
+select {
+    border: 0;
+    font-size: 18px;
+    width: 60px;
 }
 </style>

@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     getTainanSDG: function() {
-      axios.get("http://104.199.170.116/api/sdg")
+      axios.get("http://35.189.170.189/api/sdg")
         .then(response => {
           let tainanData = response.data.items
           console.log(tainanData)
@@ -87,7 +87,7 @@ export default {
     },
     getAreaSDG: function() {
       this.areas.forEach(area => {
-        axios.get(`http://104.199.170.116/api/sdg/${area}`)
+        axios.get(`http://35.189.170.189/api/sdg/${area}`)
           .then(response => {
             let areaData = response.data.items
             let rate

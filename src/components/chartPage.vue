@@ -104,8 +104,8 @@ export default {
         })
     },
     getApi: function() {
-      let apiAccident = `http://104.199.170.116/api/accident?&year=${this.year}`
-      let apiRainfail = `http://104.199.170.116/api/rain?year=${this.year}`
+      let apiAccident = `http://35.189.170.189/api/accident?&year=${this.year}`
+      let apiRainfail = `http://35.189.170.189/api/rain?year=${this.year}`
       if (this.area != "臺南") {
         apiAccident += `&district=${this.area}`
       }
